@@ -1,8 +1,24 @@
 {
     "name": "HSPDev/HuaweiApi",
+    "type": "library",
+    "description": "A barebones API to interact with the Huawei E5180 router",
+    "homepage": "https://github.com/HSPDev/Huawei-E5180-API",
+    "keywords": ["api","E5180"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Henrik Sylvester Pedersen",
+            "email": "hsp@hsp.dk",
+            "homepage": "http://blog.hsp.dk",
+            "role": "Developer"
+        }
+    ],
     "autoload": {
         "psr-0" : {
             "HSPDev\\HuaweiApi" : "src"
         }
+    },
+    "require": {
+        "php": ">=5.3.0",
     }
 }
