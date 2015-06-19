@@ -33,9 +33,127 @@ How do I use this library?
 Simply include the composer autoloader into your project after installation, as you are used to, and proceed to make a Router object. Set the address of your router and login. Now every other function listed here SHOULD work, at least on E5180. I can't talk about any other routers compliance.
 
 ```
+<?php
+require_once 'vendor/autoload.php';
+
+//The router class is the main entry point for interaction.
+$router = new HSPDev\HuaweiApi\Router;
+
+//If specified without http or https, assumes http://
+$router->setAddress('192.168.8.1');
+
+//Username and password. 
+//Username is always admin as far as I can tell.
+$router->login('admin', 'your-password');
+
+var_dump($router->getLedStatus());
+
+```
+This will get the current status off the blue LED on top, either true or false, for on/off. If this seems to work, try the following line instead:
+
+```
+<?php
+var_dump($router->setLedOn(!$router->getLedStatus()));
+
+```
+Every time you run the script now, it should turn the LED on or off, depending on it's current state.
+
+**Now let's try something else. **
+
+```
+var_dump($router->getNetwork());
+
+```
+Which should return something like the following, which shows that I'm currently on the "3 DK"" network. You can look up PLMN lists to get the numeric codes.
+
+```
+object(SimpleXMLElement)#8 (5) {
+  ["State"]=>
+  string(1) "0"
+  ["FullName"]=>
+  string(4) "3 DK"
+  ["ShortName"]=>
+  string(4) "3 DK"
+  ["Numeric"]=>
+  string(5) "23806"
+  ["Rat"]=>
+  string(1) "2"
+}
 
 ```
 
+**What about some SMS?**
+
+```
+var_dump($router->getInbox());
+
+```
+In my case it returned this, meaning I have no new messages.
+
+```
+object(SimpleXMLElement)#6 (2) {
+  ["Count"]=>
+  string(1) "0"
+  ["Messages"]=>
+  object(SimpleXMLElement)#4 (0) {
+  }
+}
+
+```
+That can't be true. Let's send some to our router. You can probably find the phone number for your router on your bills, sometimes in the web interface or maybe by simple logging into the web interface and sending yourself a message. After sending my router a SMS I got this result instead:
+
+```
+object(SimpleXMLElement)#6 (2) {
+  ["Count"]=>
+  string(1) "1"
+  ["Messages"]=>
+  object(SimpleXMLElement)#4 (1) {
+    ["Message"]=>
+    object(SimpleXMLElement)#8 (9) {
+      ["Smstat"]=>
+      string(1) "0"
+      ["Index"]=>
+      string(5) "40000"
+      ["Phone"]=>
+      string(11) "(my phone number)"
+      ["Content"]=>
+      string(3) "Lol"
+      ["Date"]=>
+      string(19) "2015-06-19 15:27:15"
+      ["Sca"]=>
+      object(SimpleXMLElement)#9 (0) {
+      }
+      ["SaveType"]=>
+      string(1) "4"
+      ["Priority"]=>
+      string(1) "0"
+      ["SmsType"]=>
+      string(1) "1"
+    }
+  }
+}
+
+```
+
+Have a look inside the Router.php class to find out what methods you can use, it's very well documented, but I will throw a list here anyway.
+
+ - login($username, $password) username is almost always "admin". "password" is the one for the web interface.
+ - getStatus() gives info about the routers status.
+ - getTrafficStats() gives traffic info 
+ - getMonthStats() does the same for the current month (if you have setup limits)
+ - getNetwork() gives info about the current network. Can't find the bars anywhere tho. 
+ - getCraddleStatus() lots of more info. I suspect you can get battery status here, if your device has one.
+ - getSmsCount() DOES NOT RETURN AN integer, but also an XML object.
+ - getWlanClients() gets a list of WlanClients, if they have IP 0.0.0.0 they are disconnected. 
+ - getNotifications() does what it says.
+ - setLedOn(boolean $on) call with "true" to turn on, and "false" for off.
+ - getLedStatus() true/false for LED status.
+ - isLoggedIn() true/false to check if logged in.
+ - getInbox($page = 1, $count = 20, $unreadPreferred = false) defaults are fine for most tinkering. page/count for pagination.
+ - deleteSms($index) provide with SMS index for deleting. Returns true if not found also.
+ - sendSms($receiver, $message) Pretty self explanatory. Might return true and not send anyway. There is an API to query for send status, but I didn't worry about it.
+
+I don't promise that these will work like advertised or at all, just have fun. It should get you started.
 
 
 ##Huawei Router API Error codes
