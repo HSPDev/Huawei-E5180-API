@@ -1,0 +1,8 @@
+{
+    "name": "HSPDev/HuaweiApi",
+    "autoload": {
+        "psr-0" : {
+            "HSPDev\\HuaweiApi" : "src"
+        }
+    }
+}
