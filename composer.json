@@ -1,5 +1,5 @@
 {
-    "name": "HSPDev/HuaweiApi",
+    "name": "hsp-dev/huawei-api",
     "type": "library",
     "description": "A barebones API to interact with the Huawei E5180 router",
     "homepage": "https://github.com/HSPDev/Huawei-E5180-API",
