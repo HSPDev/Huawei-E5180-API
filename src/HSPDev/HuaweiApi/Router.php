@@ -319,6 +319,31 @@ class Router
 	}
 
 	/**
+	 * Sets the data switch to enable or disable the mobile connection.
+	 * @return boolean
+	 */
+	public function setDataSwitch($value) {
+
+		if (is_int($value) === false) {
+			throw new \Exception('Parameter can only be integer.');
+		}
+		if ($value !== 0 && $value !== 1) {
+			throw new \Exception('Parameter can only be integer.');
+		}
+
+		//Makes sure we are ready for the next request.
+		$this->prepare(); 
+
+		$dataSwitchXml = '<?xml version="1.0" encoding="UTF-8"?><request><dataswitch>'.$value.'</dataswitch></request>';
+
+		$xml = $this->http->postXml($this->getUrl('api/dialup/mobile-dataswitch'), $dataSwitchXml);
+		$obj = new \SimpleXMLElement($xml);
+		
+		//Simple check if login is OK.
+		return ((string)$obj == 'OK');
+	}
+
+	/**
 	* Internal helper that lets us build the complete URL 
 	* to a given route in the API
 	* @return string
