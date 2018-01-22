@@ -1,14 +1,14 @@
-#Huawei E5180 API
+# Huawei E5180 API
 
 This project will let you interface with your Huawei E5180 Cube router easily.  
 This router is deployed by 3 DK, as "home routers" for their 4G connections. 
 You can get it for free if you order a 100GB or above package from 3.
-(Link where I bought mine: [https://www.3.dk/mobiler-tablets/modems-routere/huawei/huawei-e5180-cube](https://www.3.dk/mobiler-tablets/modems-routere/huawei/huawei-e5180-cube))  
+Link where I bought mine: [https://www.3.dk/mobiler-tablets/modems-routere/huawei/huawei-e5180-cube](https://www.3.dk/mobiler-tablets/modems-routere/huawei/huawei-e5180-cube)
 
 No advertisement or affiliation or anything, I wouldn't even really recommend the router. It got great speeds, but the WiFi is not the greatest, 
 and I've seen it overload multiple times when you have lots of clients on your (W)LAN. The 4G link holds, but the LAN/WiFi/Router portion is really bad, so I personally use it with a D-link DIR-810l as router, with it's WAN port connected to the Huawei routers single LAN port, so it can focus on just delivering 4G Internet.
 
-##What can it do?
+## Features
 
  - Send SMS through the mobile network
  - Receive SMS (you need to pool for this periodically)
@@ -28,45 +28,45 @@ If you like me, live in the country without good internet through wire, and want
 
 Also, the blue LED is quite fun to play with. You can tap the top, to turn it on and off, so I already have plans for letting me know if I have new emails by turning the LED blue.
 
-##Documentation
+## Documentation
+
 How do I use this library?
+
 Simply include the composer autoloader into your project after installation, as you are used to, and proceed to make a Router object. Set the address of your router and login. Now every other function listed here SHOULD work, at least on E5180. I can't talk about any other routers compliance.
 
-```
-<?php
+```php
 require_once 'vendor/autoload.php';
 
-//The router class is the main entry point for interaction.
+// The router class is the main entry point for interaction.
 $router = new HSPDev\HuaweiApi\Router;
 
-//If specified without http or https, assumes http://
+// If specified without http or https, assumes http://
 $router->setAddress('192.168.8.1');
 
-//Username and password. 
-//Username is always admin as far as I can tell.
+// Username and password. 
+// Username is always admin as far as I can tell.
 $router->login('admin', 'your-password');
 
 var_dump($router->getLedStatus());
-
 ```
+
 This will get the current status off the blue LED on top, either true or false, for on/off. If this seems to work, try the following line instead:
 
-```
-<?php
+```php
 var_dump($router->setLedOn(!$router->getLedStatus()));
-
 ```
+
 Every time you run the script now, it should turn the LED on or off, depending on it's current state.
 
-**Now let's try something else. **
+**Now let's try something else.**
 
-```
+```php
 var_dump($router->getNetwork());
-
 ```
+
 Which should return something like the following, which shows that I'm currently on the "3 DK"" network. You can look up PLMN lists to get the numeric codes.
 
-```
+```php
 object(SimpleXMLElement)#8 (5) {
   ["State"]=>
   string(1) "0"
@@ -79,18 +79,17 @@ object(SimpleXMLElement)#8 (5) {
   ["Rat"]=>
   string(1) "2"
 }
-
 ```
 
 **What about some SMS?**
 
-```
+```php
 var_dump($router->getInbox());
-
 ```
+
 In my case it returned this, meaning I have no new messages.
 
-```
+```php
 object(SimpleXMLElement)#6 (2) {
   ["Count"]=>
   string(1) "0"
@@ -98,11 +97,11 @@ object(SimpleXMLElement)#6 (2) {
   object(SimpleXMLElement)#4 (0) {
   }
 }
-
 ```
+
 That can't be true. Let's send some to our router. You can probably find the phone number for your router on your bills, sometimes in the web interface or maybe by simple logging into the web interface and sending yourself a message. After sending my router a SMS I got this result instead:
 
-```
+```php
 object(SimpleXMLElement)#6 (2) {
   ["Count"]=>
   string(1) "1"
@@ -132,7 +131,6 @@ object(SimpleXMLElement)#6 (2) {
     }
   }
 }
-
 ```
 
 Have a look inside the Router.php class to find out what methods you can use, it's very well documented, but I will throw a list here anyway.
@@ -155,12 +153,12 @@ Have a look inside the Router.php class to find out what methods you can use, it
 
 I don't promise that these will work like advertised or at all, just have fun. It should get you started.
 
+## Huawei Router API Error codes
 
-##Huawei Router API Error codes
 Sometimes if you are experimenting with the Huawei API and trying to talk with it, you will get a random error code back. This sucks, to say it politely, as there is absolutely no information on what is going wrong. Therefore, I've gotten hold of this list of error codes for the Huawei API, which I know is true for the E5180 and probably other devices too. So if you just googled "Huawei Router API Error" or something like that, congratulations, today is your lucky day.
 Please note that not all codes are in here, but most of them are.
 
-```
+```php
 ERROR_BUSY = 100004
 ERROR_CHECK_SIM_CARD_CAN_UNUSEABLE = 101004
 ERROR_CHECK_SIM_CARD_PIN_LOCK = 101002
@@ -295,7 +293,6 @@ ERROR_WIFI_STATION_CONNECT_AP_PASSWORD_ERROR = 117001
 ERROR_WIFI_STATION_CONNECT_AP_WISPR_PASSWORD_ERROR = 117004
 ERROR_WIFI_WEB_PASSWORD_OR_DHCP_OVERTIME_ERROR = 117002
 
-//My own guess, don't trust this completely.
-Unknown URLs are 100002
-
+// My own guess, don't trust this completely.
+// Unknown URLs are 100002
 ```
